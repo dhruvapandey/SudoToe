@@ -1,8 +1,9 @@
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 10px;
-  margin-top: 20px;
+  grid-gap: 1px; /* Adjust the value to change the spacing between cells */
+  margin-top: 10px;
+  justify-items: center; /* Center the cells horizontally */
 }
 
 .cell {
@@ -14,4 +15,10 @@
   align-items: center;
   font-size: 40px;
   cursor: pointer;
+}
+
+.result {
+  font-size: 34px;
+  text-align: center;
+  margin-top: 50px; /* Adjust the value to change the distance from the board */
 }
