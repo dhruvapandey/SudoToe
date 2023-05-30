@@ -1,9 +1,10 @@
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1px; /* Adjust the value to change the spacing between cells */
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0; /* Remove the gap between cells */
   margin-top: 10px;
-  justify-items: center; /* Center the cells horizontally */
+  justify-items: center;
 }
 
 .cell {
