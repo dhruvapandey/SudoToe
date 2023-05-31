@@ -1,8 +1,14 @@
 const cells = document.querySelectorAll('.cell');
+const turnDisplay = document.getElementById('turnDisplay');
 const resultDisplay = document.getElementById('result');
 const playerXNumbersDisplay = document.getElementById('playerXNumbers');
 const playerONumbersDisplay = document.getElementById('playerONumbers');
+const restartButton = document.getElementById('restartButton');
+
 let currentPlayer = 'X';
+const playerX = 'Player X';
+const playerO = 'Player O';
+
 let board = [[null, null, null], [null, null, null], [null, null, null]];
 let numbersEntered = [[null, null, null], [null, null, null], [null, null, null]];
 let playerXNumbers = [1,2,3,1,3];
@@ -64,7 +70,7 @@ cells.forEach((cell, index) => {
       console.log(`Player ${currentPlayer} moved to cell ${Math.floor(index / 3)}, ${index % 3}`);
 
       numbersEntered[Math.floor(index / 3)][index % 3] = Number(numberEntered);
-
+      
       if (getWinner()) {
         console.log(`Player ${currentPlayer} wins!`);
         resultDisplay.textContent = `Player ${currentPlayer} wins!`;
@@ -79,6 +85,7 @@ cells.forEach((cell, index) => {
       playerXNumbers.join(", ");
       playerONumbersDisplay.textContent = "Player O Numbers: " + 
       playerONumbers.join(", ");
+      updateTurnDisplay();
     }
   });
 });
@@ -91,6 +98,17 @@ function boardIsFull() {
     }
   }
   return true;
+}
+
+// Add this function to update the turn display
+function updateTurnDisplay() {
+  turnDisplay.textContent = `Current Turn: ${currentPlayer === 'X' ? playerX : playerO}`;
+}
+
+// Add this function to toggle the current player
+function togglePlayer() {
+  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+  updateTurnDisplay();
 }
 
 // Check for a winning combination
@@ -154,6 +172,8 @@ function isNumberRepeated(number, row, column) {
   return false;
 }
 
+// Add click event listener to the restart button
+restartButton.addEventListener('click', restartGame);
 // Generate a random number between 1 and 3, ensuring it is not repeated more than three times
 function randomizePlayerNumbers(playerXNumbers, playerONumbers, maxXCount, maxOCount) {
   const combinedNumbers = [...playerXNumbers, ...playerONumbers];
@@ -226,16 +246,19 @@ function isNumberAvailable(number) {
   }
   return true;
 }
-// Reset the game
-function resetGame() {
+// Function to restart the game
+function restartGame() {
   currentPlayer = 'X';
   board = [[null, null, null], [null, null, null], [null, null, null]];
   numbersEntered = [[null, null, null], [null, null, null], [null, null, null]];
-  playerXNumbers = [1, 1, 2, 3, 2]; // Example playerXNumbers
-  playerONumbers = [1, 2, 3, 3]; // Example playerONumbers
-  cells.forEach((cell) => {
-    cell.innerHTML = '';
-    cell.classList.remove('X', 'O');
+  playerXNumbers = [1, 2, 3, 1, 3];
+  playerONumbers = [1, 2, 2, 3];
+  [playerXNumbers, playerONumbers] = randomizePlayerNumbers(playerXNumbers, playerONumbers, 5, 4);
+
+  playerXNumbersDisplay.textContent = "Player X Numbers: " + playerXNumbers.join(", ");
+  playerONumbersDisplay.textContent = "Player O Numbers: " + playerONumbers.join(", ");
+  resultDisplay.textContent = "";
+  cells.forEach(cell => {
+    cell.textContent = "";
   });
 }
-
