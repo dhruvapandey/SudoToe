@@ -2,24 +2,31 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 0; /* Remove the gap between cells */
-  margin-top: 10px;
-  justify-items: center;
+  gap: 5px;
 }
 
 .cell {
   width: 100px;
   height: 100px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 32px;
+  font-weight: bold;
   border: 1px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 40px;
   cursor: pointer;
 }
 
+.X {
+  color: red;
+}
+
+.O {
+  color: blue;
+}
+
 .result {
-  font-size: 34px;
+  font-size: 24px;
+  font-weight: bold;
   text-align: center;
-  margin-top: 50px; /* Adjust the value to change the distance from the board */
+  margin-top: 10px;
 }
