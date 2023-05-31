@@ -9,58 +9,11 @@ let playerXNumbers = [1,2,3,1,3];
 let playerONumbers = [1,2,2,3];
 
 // Generate random numbers for Player X
-for (let i = 0; i < 5; i++) {
-  //playerXNumbers.push(generateRandomNumbers());
-}
 
-// Generate random numbers for Player O
-for (let i = 1; i < 1; i++) {
-  const numbers = [1, 2, 3, 1];
-  const counts = countNumbers(playerXNumbers);
-  
-  if((counts[1]==0)&&(counts[2] == 3))
-    numbers = [1,1,1,3];
-  else if((counts[1]==0)&&(counts[3] == 3))
-    numbers = [1,1,1,2];
-  else if((counts[2]==0)&&(counts[3] == 3))
-    numbers = [2,2,2,1];
-  else if((counts[2]==0)&&(counts[1] == 3))
-    numbers = [1,2,2,3];
-  else if((counts[3]==0)&&(counts[2] == 3))
-    numbers = [3,3,3,1];
-  else if((counts[3]==0)&&(counts[1] == 3))
-    numbers = [3,3,3,2];
-  else if ((counts[1]==3)&&(counts[2]==1))
-    numbers = [2,2,3,3];
-  else if ((counts[2]==3)&&(counts[1]==1))
-    numbers = [1,1,3,3];
-  else if ((counts[3]==3)&&(counts[2]==1))
-    numbers = [1,1,2,2];
-  else if ((counts[1]==3)&&(counts[2]==2))
-    numbers = [3,3,3,2];
-  else if ((counts[1]==3)&&(counts[3]==2))
-    numbers = [2,2,2,3];
-  else if ((counts[2]==3)&&(counts[1]==2))
-    numbers = [3,3,3,1];
-  else if ((counts[2]==3)&&(counts[3]==2))
-    numbers = [1,1,1,3];
-  else if ((counts[3]==3)&&(counts[1]==2))
-    numbers = [2,2,2,1];
-  else if ((counts[3]==3)&&(counts[2]==2))
-    numbers = [1,1,1,2];
-  else if ((counts[1]==2)&&(counts[2]==2))
-    numbers = [1,2,3,3];
-  else if ((counts[1]==2)&&(counts[3]==2))
-    numbers = [1,2,2,3];
-  else if ((counts[2]==2)&&(counts[3]==2))
-    numbers = [1,1,2,3];
-  else 
-    numbers = [1,2,3,1];
-  
-  shuffleArray(numbers);
-  playerONumbers.push(numbers);
-}
+[playerXNumbers, playerONumbers] = randomizePlayerNumbers(playerXNumbers, playerONumbers, 5, 4);
 
+console.log("PlayerXNumbers:", playerXNumbers);
+console.log("PlayerONumbers:", playerONumbers);
 
 // Display the generated numbers for Player X and O
 playerXNumbersDisplay.textContent = "Player X Numbers: " + playerXNumbers.join(", ");
@@ -71,6 +24,12 @@ playerONumbersDisplay.textContent = "Player O Numbers: " + playerONumbers.join("
 // Add click event listeners to cells
 cells.forEach((cell, index) => {
   cell.addEventListener('click', () => {
+     // Check if there are no valid moves left
+    if (!validMovesLeft(currentPlayer)) {
+      //alert('No valid moves left. Restarting the game.');
+      resultDisplay.textContent = `No valid moves left, Player "${currentPlayer}" LOST ..lol..!!`;
+      //resetGame();
+    }
     if (!boardIsFull() && !getWinner() && board[Math.floor(index / 3)][index % 3] === null) {
       let numberEntered;
       if (currentPlayer === 'X') {
@@ -120,12 +79,6 @@ cells.forEach((cell, index) => {
       playerXNumbers.join(", ");
       playerONumbersDisplay.textContent = "Player O Numbers: " + 
       playerONumbers.join(", ");
-
-      // Check if there are no valid moves left
-      if (!validMovesLeft(currentPlayer)) {
-        console.log("No valid moves left. Restarting the game.");
-        resetGame();
-      }
     }
   });
 });
@@ -202,12 +155,21 @@ function isNumberRepeated(number, row, column) {
 }
 
 // Generate a random number between 1 and 3, ensuring it is not repeated more than three times
-// Generate random numbers for player X and player O
-// Generate random numbers for player X or player O
-function generateRandomNumbers() {
-  const numbers = [1, 2, 3];
-  shuffleArray(numbers);
-  return numbers.pop();
+function randomizePlayerNumbers(playerXNumbers, playerONumbers, maxXCount, maxOCount) {
+  const combinedNumbers = [...playerXNumbers, ...playerONumbers];
+  
+  shuffleArray(combinedNumbers);
+
+  // Split the randomizedNumbers array into playerXNumbers and playerONumbers
+  const randomizedPlayerXNumbers = combinedNumbers
+    .filter((number) => playerXNumbers.includes(number))
+    .slice(0, maxXCount);
+
+  const randomizedPlayerONumbers = combinedNumbers
+    .filter((number) => playerONumbers.includes(number))
+    .slice(maxXCount, maxXCount + maxOCount);
+
+  return [randomizedPlayerXNumbers, randomizedPlayerONumbers];
 }
 
 // Shuffle an array using the Fisher-Yates algorithm
@@ -227,26 +189,30 @@ function countNumbers(numbers) {
 
   return counts;
 }
-// Check if there are valid moves left for the given player
-function validMovesLeft(player) {
-  const numbers = player === 'X' ? playerXNumbers : playerONumbers;
+// Check if there are valid moves left for the current player
+function validMovesLeft() {
+  const numbers = currentPlayer === 'X' ? playerXNumbers : playerONumbers;
+  
   for (let number of numbers) {
-    let isNumberAvailable = true;
+    let isNumberAvailable = false;
+
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
-        if (board[row][col] && board[row][col].number === number && isNumberRepeated(number, row, col)) {
-          isNumberAvailable = false;
+        if (!board[row][col] && !isNumberRepeated(number, row, col)) {
+          isNumberAvailable = true;
           break;
         }
       }
-      if (!isNumberAvailable) {
+      if (isNumberAvailable) {
         break;
       }
     }
+
     if (isNumberAvailable) {
       return true;
     }
   }
+
   return false;
 }
 // Check if the number is available in the board
@@ -271,6 +237,5 @@ function resetGame() {
     cell.innerHTML = '';
     cell.classList.remove('X', 'O');
   });
-  resultDisplay.textContent = `Player X Numbers: ${playerXNumbers}\nPlayer O Numbers: ${playerONumbers}`;
 }
 
